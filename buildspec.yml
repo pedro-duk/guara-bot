@@ -13,7 +13,7 @@ phases:
     commands:
       - docker push $REPO_URI:latest
       - docker push $REPO_URI:$IMAGE_TAG
-      - printf '[{"name":"bots/capibot","imageUri":"%s"}]' $REPO_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"telegram-bot","imageUri":"%s"}]' $REPO_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
