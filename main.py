@@ -20,7 +20,7 @@ from commands.pato import command_pato
 from commands.poketipo import command_poketipo
 
 # Load environment variables (only needed for local run but doesn't affect the amazon deploy)
-load_dotenv()
+load_dotenv(override=True)
 api_key = os.getenv("API_KEY")
 
 # Set logging

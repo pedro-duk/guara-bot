@@ -34,17 +34,28 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         return
 
     # Pick a random image filename
-    random_image_name = random.choice(images)
+    random_image_name_1 = random.choice(images)
+    random_image_name_2 = random.choice(images)
     # Construct the full path to the image
-    image_path = os.path.join(IMAGE_FOLDER, random_image_name)
+    image_path_1 = os.path.join(IMAGE_FOLDER, random_image_name_1)
+    image_path_2 = os.path.join(IMAGE_FOLDER, random_image_name_2)
+
 
     try:
-        # Use 'send_document' instead of 'send_photo'
-        with open(image_path, "rb") as document_file:
+        # Send the document as a raw webp, making it LOOK like a sticker!
+        with open(image_path_1, "rb") as document_file:
             await update.message.reply_document(
                 document=document_file,
-                filename=random_image_name,  # Keeps the exact original filename and extension
-                caption=f"Here is your raw file: {random_image_name}",
+                filename=random_image_name_1,  # Keeps the exact original filename and extension
+                caption=f"Here is your raw file: {random_image_name_1}",
+            )
+
+        # Send the second image!
+        with open(image_path_2, "rb") as document_file:
+            await update.message.reply_document(
+                document=document_file,
+                filename=random_image_name_2,  # Keeps the exact original filename and extension
+                caption=f"Here is your raw file: {random_image_name_2}",
             )
     except Exception as e:
         await update.message.reply_text(f"Failed to send file. Error: {e}")
