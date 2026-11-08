@@ -4,8 +4,8 @@ import random
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
-api_key = os.getenv("API_KEY")
+# load_dotenv()
+# api_key = os.getenv("API_KEY")
 
 import requests
 import logging
@@ -89,5 +89,3 @@ if __name__ == "__main__":
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
-
-    application.run_polling()
