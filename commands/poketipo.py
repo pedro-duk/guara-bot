@@ -1,6 +1,9 @@
 
 import os
 import random
+from io import BytesIO
+
+from PIL import Image
 
 # Don't change this - needs to be before telegram calls
 from dotenv import load_dotenv
@@ -14,7 +17,7 @@ from telegram.ext import (
 IMAGE_FOLDER = "./assets/poketipo-images"
 
 # Supported image extensions
-VALID_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp")
+VALID_EXTENSIONS = (".png")
 
 async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Selects a random image from the folder and sends it to the user."""
@@ -41,21 +44,26 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     image_path_2 = os.path.join(IMAGE_FOLDER, random_image_name_2)
 
 
-    try:
-        # Send the document as a raw webp, making it LOOK like a sticker!
-        with open(image_path_1, "rb") as document_file:
-            await update.message.reply_document(
-                document=document_file,
-                filename=random_image_name_1,  # Keeps the exact original filename and extension
-                caption=f"Here is your raw file: {random_image_name_1}",
-            )
 
-        # Send the second image!
-        with open(image_path_2, "rb") as document_file:
+
+    try:
+        # Convert and send both images as WebP files.
+        for image_path, image_name in (
+            (image_path_1, random_image_name_1),
+            (image_path_2, random_image_name_2),
+        ):
+            with Image.open(image_path) as image:
+                webp_file = BytesIO()
+                image.convert(
+                    "RGBA" if "A" in image.getbands() or "transparency" in image.info else "RGB"
+                ).save(webp_file, format="WEBP")
+                webp_file.seek(0)
+
+            webp_name = f"{os.path.splitext(image_name)[0]}.webp"
             await update.message.reply_document(
-                document=document_file,
-                filename=random_image_name_2,  # Keeps the exact original filename and extension
-                caption=f"Here is your raw file: {random_image_name_2}",
+                document=webp_file,
+                filename=webp_name,
+                caption=f"Here is your converted file: {webp_name}",
             )
     except Exception as e:
         await update.message.reply_text(f"Failed to send file. Error: {e}")
