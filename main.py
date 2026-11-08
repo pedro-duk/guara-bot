@@ -16,7 +16,7 @@ from telegram.ext import (
 )
 
 
-# Load environment variables
+# Load environment variables (only needed for local run but doesn't affect the amazon deploy)
 load_dotenv()
 api_key = os.getenv("API_KEY")
 
