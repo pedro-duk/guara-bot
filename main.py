@@ -1,14 +1,11 @@
 import os
 import random
+import requests
+import logging
 
 from dotenv import load_dotenv
 
-# Load environment variables
-# load_dotenv()
-# api_key = os.getenv("API_KEY")
 
-import requests
-import logging
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -17,6 +14,11 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("API_KEY")
 
 # Specify the path to your folder containing images
 # You can use relative paths like "./my_images" or absolute paths
