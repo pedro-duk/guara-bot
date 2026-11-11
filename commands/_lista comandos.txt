@@ -1,4 +1,4 @@
-pato - Manda uma figurinha de pato!
-poketipo - Gera seus poketipos de hoje!
 infobot - Mostra informações do bot.
 infouser - Mostra suas informações.
+pato - Manda uma figurinha de pato!
+poketipo - Gera seus poketipos de hoje!
