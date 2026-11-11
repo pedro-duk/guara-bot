@@ -1,4 +1,3 @@
-
 import os
 import random
 from io import BytesIO
@@ -17,7 +16,8 @@ from telegram.ext import (
 IMAGE_FOLDER = "./assets/poketipo-images"
 
 # Supported image extensions
-VALID_EXTENSIONS = (".png")
+VALID_EXTENSIONS = ".png"
+
 
 async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Selects a random image from the folder and sends it to the user."""
@@ -33,7 +33,7 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     images = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
 
     if not images:
-        await update.message.reply_text("No supported images found in the folder.")
+        await update.message.reply_text("ERRO: Nenhuma imagem válida na pasta.")
         return
 
     # Pick a random image filename
@@ -43,8 +43,13 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     image_path_1 = os.path.join(IMAGE_FOLDER, random_image_name_1)
     image_path_2 = os.path.join(IMAGE_FOLDER, random_image_name_2)
 
-
-
+    # Start message
+    start_msg_text = "Gerando os seus poketipos de hoje:"
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=start_msg_text,
+        reply_to_message_id=update.message.id,
+    )
 
     try:
         # Convert and send both images as WebP files.
@@ -55,16 +60,20 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             with Image.open(image_path) as image:
                 webp_file = BytesIO()
                 image.convert(
-                    "RGBA" if "A" in image.getbands() or "transparency" in image.info else "RGB"
+                    "RGBA"
+                    if "A" in image.getbands() or "transparency" in image.info
+                    else "RGB"
                 ).save(webp_file, format="WEBP")
                 webp_file.seek(0)
 
             webp_name = f"{os.path.splitext(image_name)[0]}.webp"
-            await update.message.reply_document(
+
+            await context.bot.send_document(
+                chat_id=update.effective_chat.id,
                 document=webp_file,
                 filename=webp_name,
                 caption=f"Here is your converted file: {webp_name}",
+                reply_to_message_id=update.message.id,
             )
     except Exception as e:
         await update.message.reply_text(f"Failed to send file. Error: {e}")
-
