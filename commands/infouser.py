@@ -7,11 +7,11 @@ from telegram.ext import (
 )
 
 
-async def command_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    version = (Path(__file__).resolve().parents[1] / "VERSION").read_text(encoding="utf-8").strip().replace(".", r"\.")
-    text = f"""***CAPI BOT***
-***Versão do bot***: {version} \n
-Feito com amor pela equipe dos Capivaras Mineiras <3"""
+async def command_infouser(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    id_usuario = update.message.from_user.id
+
+    text = f"""***INFORMAÇÕES DO SEU USUÁRIO***
+***Seu id***: {id_usuario}"""
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,

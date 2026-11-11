@@ -1,7 +1,7 @@
 import os
 import logging
 
-# Don't change this - needs to be before telegram calls
+# Não mude isso - deve acontecer antes de chamar as calls do telegram
 from dotenv import load_dotenv
 
 from telegram import Update
@@ -13,16 +13,17 @@ from telegram.ext import (
     filters,
 )
 
-# Command imports
+# Importações de comandos
 from commands.pato import command_pato
 from commands.poketipo import command_poketipo
-from commands.info import command_info
+from commands.infobot import command_infobot
+from commands.infouser import command_infouser
 
-# Load environment variables (only needed for local run but doesn't affect the amazon deploy)
+# Carregar env (só necessário para rodar localmente, mas não afeta a run na AWS)
 load_dotenv(override=True)
 api_key = os.getenv("API_KEY")
 
-# Set logging
+# Logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
@@ -37,7 +38,8 @@ if __name__ == "__main__":
     # Registering the commands
     application.add_handler(CommandHandler("pato", command_pato))
     application.add_handler(CommandHandler("poketipo", command_poketipo))
-    application.add_handler(CommandHandler("info", command_info))
+    application.add_handler(CommandHandler("infobot", command_infobot))
+    application.add_handler(CommandHandler("infouser", command_infouser))
 
     # on non command i.e message - echo the message on Telegram
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, command_echo))
