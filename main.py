@@ -13,6 +13,9 @@ from telegram.ext import (
     filters,
 )
 
+# Importação das funções do mongodb
+from utils.mongodb import connect_mongodb
+
 # Importações de comandos
 from commands.pato import command_pato
 from commands.poketipo import command_poketipo
@@ -23,17 +26,23 @@ from commands.infouser import command_infouser
 load_dotenv(override=True)
 api_key = os.getenv("API_KEY")
 
+
 # Logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 
+
 async def command_echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
     await update.message.reply_text("Olá! Digite / para ver a minha lista de comandos.")
 
+
 if __name__ == "__main__":
     application = ApplicationBuilder().token(api_key).build()
+
+    # Conectar ao mongodb
+    connect_mongodb()
 
     # Registering the commands
     application.add_handler(CommandHandler("pato", command_pato))
@@ -42,7 +51,9 @@ if __name__ == "__main__":
     application.add_handler(CommandHandler("infouser", command_infouser))
 
     # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, command_echo))
+    application.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, command_echo)
+    )
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
