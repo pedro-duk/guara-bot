@@ -1,6 +1,6 @@
-import os
 import random
 from io import BytesIO
+from pathlib import Path
 from classes.user import User
 
 from PIL import Image
@@ -18,7 +18,8 @@ from utils.mongodb import *
 from datetime import date
 
 # Path to folder with images
-IMAGE_FOLDER = "./assets/poketipo-images/WEBP"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+IMAGE_FOLDER = PROJECT_ROOT / "assets" / "poketipo-images" / "WEBP"
 
 # Supported image extensions
 VALID_EXTENSIONS = ".webp"
@@ -27,27 +28,23 @@ VALID_EXTENSIONS = ".webp"
 # Gera os poketipos aleatórios a partir das imagens que já existem na pasta webp
 def generate_poketipos():
     # Ensure the directory exists
-    if not os.path.exists(IMAGE_FOLDER):
+    if not IMAGE_FOLDER.is_dir():
         logging.error("Generate_poketipos: diretório não existe")
         return None
 
     # List all files in the folder that match valid image extensions
-    all_files = os.listdir(IMAGE_FOLDER)
-    images = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
+    images = [
+        path
+        for path in IMAGE_FOLDER.iterdir()
+        if path.is_file() and path.name.lower().endswith(VALID_EXTENSIONS)
+    ]
 
     if not images:
         logging.error("Generate_poketipos: Não encontrou imagens")
         return None
 
     # Pick a random image filename
-    random_image_name_1 = random.choice(images)
-    random_image_name_2 = random.choice(images)
-
-    # Construct the full path to the image
-    image_path_1 = os.path.join(IMAGE_FOLDER, random_image_name_1)
-    image_path_2 = os.path.join(IMAGE_FOLDER, random_image_name_2)
-
-    return image_path_1, image_path_2
+    return str(random.choice(images)), str(random.choice(images))
 
 
 async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -67,23 +64,45 @@ async def command_poketipo(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     if not is_today:
         # Gerar tipos e atualizar
-        poketipo_path_1, poketipo_path_2 = generate_poketipos()
-
-        if not poketipo_path_1:
+        poketipos = generate_poketipos()
+        if not poketipos:
             await update.message.reply_text(
                 "ERRO: Não foi encontrado imagens (checar logs)."
             )
             return
 
+        poketipo_path_1, poketipo_path_2 = poketipos
         user_data["poketipo_path_1"] = poketipo_path_1
         user_data["poketipo_path_2"] = poketipo_path_2
         user_data["timestamp_poketipo"] = datetime.datetime.now()
 
         update_user(user_data)
     else:
-        # Pegar tipos já definidos
-        poketipo_path_1 = user_data["poketipo_path_1"]
-        poketipo_path_2 = user_data["poketipo_path_2"]
+        # Resolve older relative paths against the project, not the process cwd.
+        poketipo_paths = []
+        for stored_path in (
+            user_data["poketipo_path_1"],
+            user_data["poketipo_path_2"],
+        ):
+            path = Path(stored_path)
+            if not path.is_absolute():
+                path = PROJECT_ROOT / path
+            poketipo_paths.append(path)
+
+        if not all(path.is_file() for path in poketipo_paths):
+            poketipos = generate_poketipos()
+            if not poketipos:
+                await update.message.reply_text(
+                    "ERRO: Não foi encontrado imagens (checar logs)."
+                )
+                return
+
+            poketipo_paths = [Path(path) for path in poketipos]
+            user_data["poketipo_path_1"] = str(poketipo_paths[0])
+            user_data["poketipo_path_2"] = str(poketipo_paths[1])
+            update_user(user_data)
+
+        poketipo_path_1, poketipo_path_2 = map(str, poketipo_paths)
 
     # Enviar mensagem inicial
     start_msg_text = (
