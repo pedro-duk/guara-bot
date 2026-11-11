@@ -16,6 +16,7 @@ from telegram.ext import (
 # Command imports
 from commands.pato import command_pato
 from commands.poketipo import command_poketipo
+from commands.info import command_info
 
 # Load environment variables (only needed for local run but doesn't affect the amazon deploy)
 load_dotenv(override=True)
@@ -36,6 +37,7 @@ if __name__ == "__main__":
     # Registering the commands
     application.add_handler(CommandHandler("pato", command_pato))
     application.add_handler(CommandHandler("poketipo", command_poketipo))
+    application.add_handler(CommandHandler("info", command_info))
 
     # on non command i.e message - echo the message on Telegram
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, command_echo))

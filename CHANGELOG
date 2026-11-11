@@ -6,4 +6,5 @@
 
 - Comando "pato" - manda uma imagem de pato aleatória;
 - Comando "poketipo" - (WIP) gera 2 poketipos aleatórios;
+- Comando "info" - mostra informações do bot;
 - Função echo - responde "Olá! Digite / para ver a minha lista de comandos." quando um usuário manda mensagem no privado.

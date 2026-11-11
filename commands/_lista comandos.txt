@@ -1,0 +1,3 @@
+pato - Manda uma figurinha de pato!
+poketipo - Gera seus poketipos de hoje!
+info - Mostra informações do bot.
